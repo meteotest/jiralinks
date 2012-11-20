@@ -13,7 +13,7 @@ will not work!
 Please refer to http://www.dokuwiki.org/plugins for additional info
 on how to install plugins in DokuWiki.
 
-Icon bug1.gif created by Neal Applebaum and found on the official Jira wiki at
+Icon `bug1.gif` created by Neal Applebaum and found on the official Jira wiki at
 https://confluence.atlassian.com/display/JIRACOM/Extra+Jira+Icons.
 
 This plugin is inspired by the original Jira plugin by Robert Lopuszanski at
