@@ -4,8 +4,7 @@
  *
  * @author christian studer <christian.studer@meteotest.ch>
  */
- 
-.dokuwiki a.jiralink {
+div.dokuwiki a.jiralink {
 	background-image: url(lib/plugins/jiralinks/images/bug1.gif);
 	background-repeat: no-repeat;
 	background-position: 0 center;
