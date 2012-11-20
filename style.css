@@ -6,7 +6,7 @@
  */
  
 .dokuwiki a.jiralink {
-	background-image: url(images/bug1.gif);
+	background-image: url(lib/plugins/jiralinks/images/bug1.gif);
 	background-repeat: no-repeat;
 	background-position: 0 center;
 	padding: 0 0 0 18px;
