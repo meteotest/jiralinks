@@ -1,11 +1,10 @@
-@CHARSET "UTF-8";
 /**
  * CSS for the Jira-links syntax plugin
  *
  * @author christian studer <christian.studer@meteotest.ch>
  */
 div.dokuwiki a.jiralink {
-	background-image: url(lib/plugins/jiralinks/images/bug1.gif);
+	background-image: url(images/bug1.gif);
 	background-repeat: no-repeat;
 	background-position: 0 center;
 	padding: 0 0 0 18px;
