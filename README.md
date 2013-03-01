@@ -4,6 +4,9 @@ Jira-links
 DokuWiki plugin to automatically link to Jira issues and automatically
 add remote issue links back to the wiki pages where these issues are mentioned.
 
+For the remote issue links functionality, the curl PHP module needs to be activated.
+Requires Jira 5.0 or later, with REST enabled.
+
 All documentation for this plugin can be found at
 http://www.dokuwiki.org/plugin:jiralinks.
 
