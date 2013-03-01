@@ -2,7 +2,7 @@ Jira-links
 ==========
 
 DokuWiki plugin to automatically link to Jira issues and automatically
-link from Jira issues back to the wiki pages where these issues are mentioned.
+add remote issue links back to the wiki pages where these issues are mentioned.
 
 All documentation for this plugin can be found at
 http://www.dokuwiki.org/plugin:jiralinks.
