@@ -13,7 +13,7 @@ if (!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
 require_once DOKU_PLUGIN.'syntax.php';
 
 /**
- * The Jira-links syntay plugin itself
+ * The Jira-links syntax plugin itself
  * 
  * @author christian studer <christian.studer@meteotest.ch>
  */
