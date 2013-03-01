@@ -18,6 +18,13 @@ if (!defined('DOKU_INC')) die();
  */
 class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 	/**
+	 * Flag to detect double triggering of the event
+	 * 
+	 * @var bool
+	 */
+	protected $alreadyTriggered = FALSE;
+	
+	/**
 	 * Register the IO_WIKIPAGE_WRITE AFTER event handler, if required
 	 * 
 	 * @param Doku_Event_Handler $controller
@@ -36,6 +43,8 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 	 * @param mixed $param
 	 */
 	public function addRemoteIssueLinks(Doku_Event &$event, $param) {
+		if($this->alreadyTriggered) return;
+		
 		global $ID, $INFO, $conf;		
 		
 		// Look for issue keys
@@ -48,6 +57,7 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 			$applicationType = 'org.dokuwiki';
 			$title = $applicationName . ' - ' . (empty($INFO['meta']['title']) ? $event->data[2] : $INFO['meta']['title']);
 			$relationship = $this->getConf('url_relationship');
+			$favicon = tpl_getFavicon(TRUE);
 			
 			foreach($keys as $key) {
 				// Prepare final data array
@@ -61,11 +71,15 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 					'object' => array(
 							'url' => $url,
 							'title' => $title,
+							'icon' => array(
+									'url16x16' => $favicon),
 							),
 				);
 				
 				$this->executeRequest("issue/{$key}/remotelink", 'POST', $data);
 			}
+			
+			$this->alreadyTriggered = TRUE;
 		}
 	}
 	
