@@ -75,10 +75,8 @@ class syntax_plugin_jiralinks extends DokuWiki_Syntax_Plugin {
 
 		// Append the link to the issue
 		$url = $this->getConf('jiraserver') . $data[0];
-		$renderer->doc .= $this->external_link($url, $data[0], 'jiralink'); // TODO Fix this, couldn't find external_link() for a syntax plugin.
+		$renderer->doc .= $renderer->external_link($url, $data[0], 'jiralink');
 		
-		//$renderer->doc .= '<a class="jiralink" href="' . $this->getConf('jiraserver') . $data[0] . '">' . $data[0] . '</a>';
-	
 		return true;
 	}
 }
