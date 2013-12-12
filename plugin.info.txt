@@ -1,7 +1,7 @@
 base	jiralinks
 author	christian studer
 email	christian.studer@meteotest.ch
-date	2013-03-01
+date	2013-12-12
 name	Jira-links
 desc	Automatically create links to Jira issues and automatically add remote issue links back to the wiki pages where these issues are mentioned.
 url		http://www.dokuwiki.org/plugin:jiralinks
