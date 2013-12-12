@@ -57,8 +57,8 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 			$applicationType = 'org.dokuwiki';
 			$title = $applicationName . ' - ' . (empty($INFO['meta']['title']) ? $event->data[2] : $INFO['meta']['title']);
 			$relationship = $this->getConf('url_relationship');
-			$favicon = tpl_getFavicon(TRUE);
-			
+			$favicon = tpl_getMediaFile(array(':wiki:favicon.ico', ':favicon.ico', 'images/favicon.ico'), TRUE);
+
 			foreach($keys as $key) {
 				// Prepare final data array
 				$data = array(
