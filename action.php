@@ -109,12 +109,11 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 		}
 		
 		// Basic curl setup
-		curl_setopt($curl, CURLOPT_SSLVERSION, 3);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
 		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC) ;
 		curl_setopt($curl, CURLOPT_USERPWD, $this->getConf('jira_api_username') . ':' . $this->getConf('jira_api_password'));
-		curl_setopt($curl, CURLOPT_TIMEOUT, 5);
+		curl_setopt($curl, CURLOPT_TIMEOUT, 10);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($curl, CURLOPT_HEADER, FALSE);
 		curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
