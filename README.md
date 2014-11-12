@@ -25,7 +25,7 @@ https://www.dokuwiki.org/plugin:jira.
 
 
 ----
-Copyright (C) 2013 christian studer <christian.studer@meteotest.ch>
+Copyright (C) 2014 christian studer <christian.studer@meteotest.ch>
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
