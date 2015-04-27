@@ -4,6 +4,6 @@
  * 
  * @author christian studer <christian.studer@meteotest.ch>
  */
-$conf['jiraserver'] = 'https://url-to-server/browse/';
-$conf['jira_api_url'] = 'https://url-to-server/rest/api/latest/';
+$conf['jiraserver'] = 'https://jira.example.org/browse/';
+$conf['jira_api_url'] = 'https://jira.example.org/rest/api/latest/';
 $conf['url_relationship'] = 'mentioned on';
