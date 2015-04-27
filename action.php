@@ -92,7 +92,8 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 	 * @return StdClass
 	 */
 	protected function executeRequest($request, $method = 'GET', $data = NULL) {
-		$curl = curl_init($this->getConf('jira_api_url') . $request);
+		$url = $this->getConf('jira_api_url') . $request;
+		$curl = curl_init($url);
 
 		// Additional curl setup
 		switch(strtoupper($method)) {
@@ -121,7 +122,20 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 		// Execution
 		$response = curl_exec($curl);
 		curl_close($curl);
-		
-		return json_decode($response);
+
+		$json = json_decode($response);
+		if (!$json) {
+			error_log("Error pinging $url: $response");
+			return null;
+		}
+
+		if (isset($json->errorMessages)) {
+			// {"errorMessages":["You do not have the permission to see the specified issue.","Login Required"],"errors":{}}
+			$errors = join(", ", $json->errorMessages);
+			error_log("Error pinging $url: $errors");
+			return null;
+		}
+
+		return $json;
 	}
 }
