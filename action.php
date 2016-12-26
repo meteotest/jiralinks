@@ -23,13 +23,6 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 	 * @var bool
 	 */
 	protected $alreadyTriggered = FALSE;
-
-	/**
-	 * Array stored old state
-	 * 
-	 * @var array
-	 */
-	protected $oldKeys = array("");
 	
 	/**
 	 * Register the COMMON_WIKIPAGE_SAVE event handler, if required
@@ -48,12 +41,14 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 	 * 
 	 * @param array $oldKeys
 	 */
-	public function saveOldKeys($oldKeys) {
+	public function saveOldKeys($oldContent) {
 		// Look for issue keys
-		if(preg_match_all('/[A-Z]+?-[0-9]+/', $oldKeys, $keys)) {
-			$this->oldKeys = array_unique($keys[0]);
-			$this->oldKeys = $this->filterExistingIssues($this->oldKeys);
+		if(preg_match_all('/[A-Z]+?-[0-9]+/', $oldContent, $oldKeys)) {
+			$oldKeys = array_unique($keys[0]);
+			$oldKeys = $this->filterExistingIssues($oldKeys);
+			return $oldKeys;
 		}
+		else return null;
 	}
 
 	/**
@@ -62,8 +57,8 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 	 * @param array $newKeys 
 	 * @return array
 	 */
-	public function findDifference($newKeys) {
-		return array_diff($this->oldKeys, $newKeys);
+	public function findDifference($oldKeys, $newKeys) {
+		return array_diff($oldKeys, $newKeys);
 	}
 
 
@@ -72,9 +67,7 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 	 * 
 	 * @param array $keys 
 	 */
-	public function deleteRemoteLinks($keys) {
-		$needToDelete = $this->findDifference($keys);
-		
+	public function deleteRemoteLinks($needToDelete) {		
 		foreach($needToDelete as $key)
 		{
 			$response = $this->executeRequest("issue/{$key}/remotelink", 'GET');
@@ -114,7 +107,7 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 		
 		global $ID, $INFO, $conf;	
 		
-		$this->saveOldKeys($event->data[oldContent]);
+		$oldKeys = $this->saveOldKeys($event->data[oldContent]);
 		
 		// Look for issue keys
 		if(preg_match_all('/[A-Z]+?-[0-9]+/', $event->data[newContent], $keys)) {
@@ -122,7 +115,9 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 			// Keys found, prepare data for the remote issue link
 			$keys = array_unique($keys[0]);
 			
-			$this->deleteRemoteLinks($keys);
+			$needToDelete = $this->findDifference($oldKeys, $keys);
+			
+			$this->deleteRemoteLinks($needToDelete);
 			
 			$keys = $this->filterExistingIssues($keys);
 			
@@ -130,7 +125,7 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 			$globalId = md5($url); // MD5 hash is used because the global id max length is 255 characters. An effective page URL might be longer.
 			$applicationName =  $conf['title'];
 			$applicationType = 'org.dokuwiki';
-			$title = $applicationName . ' - ' . (empty($INFO['meta']['title']) ? $event->data[2] : $INFO['meta']['title']);
+			$title = $applicationName . ' - ' . (empty($INFO['meta']['title']) ? $event->data[id] : $INFO['meta']['title']);
 			$relationship = $this->getConf('url_relationship');
 			$favicon = tpl_getMediaFile(array(':wiki:favicon.ico', ':favicon.ico', 'images/favicon.ico'), TRUE);
 
