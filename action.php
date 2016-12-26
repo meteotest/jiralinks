@@ -56,6 +56,34 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 		}
 	}
 
+	/**
+	 * Find deleted links to issues on dokuwiki page
+	 * 
+	 * @param array $newKeys 
+	 * @return array
+	 */
+	public function findDifference($newKeys) {
+		return array_diff($this->oldKeys, $newKeys);
+	}
+
+
+	/**
+	 * Delete remote links in Jira Project
+	 * 
+	 * @param array $keys 
+	 */
+	public function deleteRemoteLinks($keys) {
+		$needToDelete = $this->findDifference($keys);
+		
+		foreach($needToDelete as $key)
+		{
+			$response = $this->executeRequest("issue/{$key}/remotelink", 'GET');
+			$response_id = $response[0]->id;
+			$this->executeRequest("issue/{$key}/remotelink/{$response_id}", 'DELETE');
+
+		}
+	}
+
 
 	/**
 	 * Filter existing issues
@@ -93,6 +121,8 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 			
 			// Keys found, prepare data for the remote issue link
 			$keys = array_unique($keys[0]);
+			
+			$this->deleteRemoteLinks($keys);
 			
 			$keys = $this->filterExistingIssues($keys);
 			
