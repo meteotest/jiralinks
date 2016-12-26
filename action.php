@@ -25,15 +25,75 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 	protected $alreadyTriggered = FALSE;
 	
 	/**
-	 * Register the IO_WIKIPAGE_WRITE AFTER event handler, if required
+	 * Register the COMMON_WIKIPAGE_SAVE event handler, if required
 	 * 
 	 * @param Doku_Event_Handler $controller
 	 */
 	public function register(Doku_Event_Handler &$controller) {
 		if($this->getConf('enable_adding_urls_to_issues') and function_exists('curl_version')) {
-			$controller->register_hook('IO_WIKIPAGE_WRITE', 'AFTER', $this, 'addRemoteIssueLinks');
+			$controller->register_hook('COMMON_WIKIPAGE_SAVE', 'AFTER', $this, 'addRemoteIssueLinks');
 		}
 		
+	}
+	
+	/**
+	 * Save old keys of page
+	 * 
+	 * @param array $oldKeys
+	 */
+	public function saveOldKeys($oldContent) {
+		// Look for issue keys
+		if(preg_match_all('/[A-Z]+?-[0-9]+/', $oldContent, $oldKeys)) {
+			$oldKeys = array_unique($keys[0]);
+			$oldKeys = $this->filterExistingIssues($oldKeys);
+			return $oldKeys;
+		}
+		else return null;
+	}
+
+	/**
+	 * Find deleted links to issues on dokuwiki page
+	 * 
+	 * @param array $newKeys 
+	 * @return array
+	 */
+	public function findDifference($oldKeys, $newKeys) {
+		return array_diff($oldKeys, $newKeys);
+	}
+
+
+	/**
+	 * Delete remote links in Jira Project
+	 * 
+	 * @param array $keys 
+	 */
+	public function deleteRemoteLinks($needToDelete) {		
+		foreach($needToDelete as $key)
+		{
+			$response = $this->executeRequest("issue/{$key}/remotelink", 'GET');
+			$response_id = $response[0]->id;
+			$this->executeRequest("issue/{$key}/remotelink/{$response_id}", 'DELETE');
+
+		}
+	}
+
+
+	/**
+	 * Filter existing issues
+	 * 
+	 * @param array $keys 
+	 * @return array
+	 */
+	public function filterExistingIssues($keys) {
+		foreach($keys as $key)
+		{
+			$response = $this->executeRequest("issue/{$key}", 'GET');
+			if(!$response->id)
+			{
+				array_splice($keys, array_search($key, $keys), 1);
+			}
+		}
+		return $keys;
 	}
 	
 	/**
@@ -45,17 +105,27 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 	public function addRemoteIssueLinks(Doku_Event &$event, $param) {
 		if($this->alreadyTriggered) return;
 		
-		global $ID, $INFO, $conf;		
+		global $ID, $INFO, $conf;	
+		
+		$oldKeys = $this->saveOldKeys($event->data[oldContent]);
 		
 		// Look for issue keys
-		if(preg_match_all('/[A-Z]+?-[0-9]+/', $event->data[0][1], $keys)) {
+		if(preg_match_all('/[A-Z]+?-[0-9]+/', $event->data[newContent], $keys)) {
+			
 			// Keys found, prepare data for the remote issue link
 			$keys = array_unique($keys[0]);
+			
+			$needToDelete = $this->findDifference($oldKeys, $keys);
+			
+			$this->deleteRemoteLinks($needToDelete);
+			
+			$keys = $this->filterExistingIssues($keys);
+			
 			$url = wl($ID, '', TRUE);
 			$globalId = md5($url); // MD5 hash is used because the global id max length is 255 characters. An effective page URL might be longer.
 			$applicationName =  $conf['title'];
 			$applicationType = 'org.dokuwiki';
-			$title = $applicationName . ' - ' . (empty($INFO['meta']['title']) ? $event->data[2] : $INFO['meta']['title']);
+			$title = $applicationName . ' - ' . (empty($INFO['meta']['title']) ? $event->data[id] : $INFO['meta']['title']);
 			$relationship = $this->getConf('url_relationship');
 			$favicon = tpl_getMediaFile(array(':wiki:favicon.ico', ':favicon.ico', 'images/favicon.ico'), TRUE);
 
@@ -77,6 +147,7 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 				);
 				
 				$this->executeRequest("issue/{$key}/remotelink", 'POST', $data);
+
 			}
 			
 			$this->alreadyTriggered = TRUE;
@@ -96,7 +167,7 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 
 		// Additional curl setup
 		switch(strtoupper($method)) {
-			default:
+			default: break;
 			case 'GET':
 				// Do nothing
 				break;
@@ -106,6 +177,8 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 				// Send data
 				curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
 				break;
+			case 'DELETE':
+				curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 		}
 		
 		// Basic curl setup
