@@ -48,7 +48,8 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 		global $ID, $INFO, $conf;		
 		
 		// Look for issue keys
-		if(preg_match_all('/[A-Z]+?-[0-9]+/', $event->data[0][1], $keys)) {
+        $issue_key_pattern = '/' . $this->getConf('jira_projectkey_pattern') . '-[0-9]+' . '/';
+        if(preg_match_all($issue_key_pattern, $event->data[0][1], $keys)) {
 			// Keys found, prepare data for the remote issue link
 			$keys = array_unique($keys[0]);
 			$url = wl($ID, '', TRUE);

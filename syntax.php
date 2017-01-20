@@ -43,8 +43,9 @@ class syntax_plugin_jiralinks extends DokuWiki_Syntax_Plugin {
 	 * @param string $mode
 	 */
 	public function connectTo($mode) {
-		// Detect all KEYS-123
-		$this->Lexer->addSpecialPattern('[A-Z]+?-[0-9]+', $mode, 'plugin_jiralinks');
+        $issue_key_pattern = $this->getConf('jira_projectkey_pattern') . '-[0-9]+';
+        // Detect all issues' keys
+        $this->Lexer->addSpecialPattern($issue_key_pattern, $mode, 'plugin_jiralinks');
 	}
 
 	/**
