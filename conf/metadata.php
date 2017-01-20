@@ -10,3 +10,4 @@ $meta['url_relationship'] = array('string');
 $meta['jira_api_url'] = array('string');
 $meta['jira_api_username'] = array('string');
 $meta['jira_api_password'] = array('password');
+$meta['jira_projectkey_pattern'] = array('string');
