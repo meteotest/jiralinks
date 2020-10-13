@@ -3,7 +3,7 @@
  *
  * @author christian studer <christian.studer@meteotest.ch>
  */
-div.dokuwiki a.jiralink {
+a.jiralink {
 	background-image: url(images/bug1.gif);
 	background-repeat: no-repeat;
 	background-position: 0 center;
