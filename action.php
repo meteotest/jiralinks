@@ -29,7 +29,7 @@ class action_plugin_jiralinks extends DokuWiki_Action_Plugin {
 	 * 
 	 * @param Doku_Event_Handler $controller
 	 */
-	public function register(Doku_Event_Handler &$controller) {
+	public function register(Doku_Event_Handler $controller) {
 		if($this->getConf('enable_adding_urls_to_issues') and function_exists('curl_version')) {
 			$controller->register_hook('IO_WIKIPAGE_WRITE', 'AFTER', $this, 'addRemoteIssueLinks');
 		}
